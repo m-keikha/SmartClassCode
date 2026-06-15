@@ -1,5 +1,27 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
+  "/api/gpt-openai/route": "app/api/gpt-openai/route.js",
+  "/api/tts-gemini/route": "app/api/tts-gemini/route.js",
+  "/page": "app/page.js",
+  "/api/check-email/route": "app/api/check-email/route.js",
+  "/student/listening-page/page": "app/student/listening-page/page.js",
+  "/student/page": "app/student/page.js",
+  "/api/gemini_transcribe/route": "app/api/gemini_transcribe/route.js",
+  "/student/listening-page/run/page": "app/student/listening-page/run/page.js",
+  "/student/select-letter/letter-view/page": "app/student/select-letter/letter-view/page.js",
   "/student/select-letter/page": "app/student/select-letter/page.js",
-  "/student/select-letter/letter-view/page": "app/student/select-letter/letter-view/page.js"
+  "/signup/teacher/page": "app/signup/teacher/page.js",
+  "/teacher/admin-alefba/page": "app/teacher/admin-alefba/page.js",
+  "/teacher/listening-page/page": "app/teacher/listening-page/page.js",
+  "/api/signUp/route": "app/api/signUp/route.js",
+  "/teacher/listening-page/run/page": "app/teacher/listening-page/run/page.js",
+  "/teacher/listening-page/responses/page": "app/teacher/listening-page/responses/page.js",
+  "/teacher/admin-listening/page": "app/teacher/admin-listening/page.js",
+  "/teacher/student-score/page": "app/teacher/student-score/page.js",
+  "/teacher/admin/page": "app/teacher/admin/page.js",
+  "/teacher/page": "app/teacher/page.js",
+  "/teacher/transcribe/page": "app/teacher/transcribe/page.js",
+  "/api/openai_tts/route": "app/api/openai_tts/route.js",
+  "/api/tts/route": "app/api/tts/route.js",
+  "/api/transcribe/route": "app/api/transcribe/route.js"
 }
