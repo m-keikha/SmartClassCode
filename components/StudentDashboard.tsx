@@ -35,13 +35,11 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ studentId, onLogout
     const myReport = getStudentReport(studentId);
     setReport(myReport);
 
-    // Calculate Stats
     if (myGrades.length > 0) {
       const sum = myGrades.reduce((acc, curr) => acc + curr.score, 0);
       setAverage(Number((sum / myGrades.length).toFixed(2)));
     }
 
-    // Calculate Rank
     const studentAverages = allStudents.map(s => {
       const sGrades = allGrades.filter(g => g.studentId === s._id);
       if (sGrades.length === 0) return { id: s._id, avg: 0 };
@@ -49,7 +47,6 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ studentId, onLogout
       return { id: s._id, avg: sum / sGrades.length };
     });
 
-    // Sort descending
     studentAverages.sort((a, b) => b.avg - a.avg);
     const myRank = studentAverages.findIndex(s => s.id === studentId) + 1;
     setRank(myRank);
@@ -58,7 +55,6 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ studentId, onLogout
 
   if (!student) return <div className="p-10 text-center">در حال بارگذاری...</div>;
 
-  // Prepare Chart Data
   const chartData = grades.map(g => ({
     name: courses.find(c => c._id === g.courseId)?.name || 'ناشناس',
     score: g.score,
@@ -83,7 +79,6 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ studentId, onLogout
 
       <main className="flex-1 p-6 max-w-6xl mx-auto w-full space-y-6">
         
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100 flex items-center gap-4">
             <div className="bg-emerald-100 p-3 rounded-full text-emerald-600">
@@ -117,7 +112,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ studentId, onLogout
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Chart Section */}
+
           <div className="bg-white p-6 rounded-2xl shadow-sm border h-[400px]">
             <h3 className="font-bold text-gray-700 mb-6 border-b pb-2">نمودار پیشرفت تحصیلی</h3>
             <ResponsiveContainer width="100%" height="85%">
@@ -138,7 +133,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ studentId, onLogout
             </ResponsiveContainer>
           </div>
 
-          {/* AI Report Section */}
+
           <div className="bg-white p-6 rounded-2xl shadow-sm border flex flex-col">
             <h3 className="font-bold text-gray-700 mb-4 border-b pb-2 flex items-center">
               <BrainCircuit className="w-5 h-5 ml-2 text-indigo-600" />
@@ -166,7 +161,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ studentId, onLogout
           </div>
         </div>
 
-        {/* Grades Table */}
+
         <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
           <div className="p-4 bg-gray-50 border-b font-bold text-gray-700">ریز نمرات</div>
           <table className="w-full text-sm">

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 
-import Link from "next/link"; // برای دکمه بازگشت
+import Link from "next/link";
 
 // import EmailVerify from '@/components/EmailVerify'
 import { useRouter } from 'next/navigation'
@@ -100,7 +100,6 @@ export default function SignUp() {
                 }
 
                 alert('✅ ثبت نام با موفقیت انجام شد!')
-                // router.push('/dashboard') // به صفحه مورد نظر بروید
 
             } else {
                 const errorMessage = 'خطا در ثبت نام'
@@ -115,27 +114,6 @@ export default function SignUp() {
 
 
 
-            // const signUpResponse = await fetch('/api/signUp', {
-            //     method: "POST",
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify(data)
-            // });
-
-            // if (!signUpResponse.ok) {
-            //     throw new Error(`خطای HTTP در ثبت نام: ${signUpResponse.status}`);
-            // }
-
-            // const signUpResult = await signUpResponse.json();
-            // console.log('📥 پاسخ signUp:', signUpResult);
-
-            // if (!signUpResult.success) {
-            //     console.error('❌ خطا در ثبت نام:', signUpResult.message);
-            //     setError(`خطا در ثبت نام: ${signUpResult.message || 'خطای ناشناخته'}`);
-            //     setIsLoading(false);
-            //     return;
-            // }
 
             console.log('✅ ثبت نام موفقیت‌آمیز');
 
@@ -146,40 +124,22 @@ export default function SignUp() {
 
         }
 
-
-        // const verifyEmail = await EmailVerify(data.email)
-
-        // if (verifyEmail.error) {
-        //     console.log(verifyEmail.error)
-        // }
-        // if (verifyEmail.result) {
-        //     console.log(verifyEmail.result)
-        //     isSuccessOtp = true
-        // setIsSuccessSendOtb(true)
-
-
-        // localStorage.setItem('userSignUpData', JSON.stringify(data))
-        // if (isSuccessOtp) {
-        //     alert('کد به سرور ارسال شد !')
-        //     router.push(`/auth/signup/email-verify?email=${data.email}`)
-        // }
     }
 
 
-// ... کدهای کامپوننت و لاجیک شما ...
 
 return (
   <div className="min-h-screen bg-[url('/nature.jpg')] bg-cover bg-center bg-fixed relative flex items-center justify-center p-4 sm:p-8" dir="rtl">
-    {/* لایه تیره پس‌زمینه */}
+    
     <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
 
-    {/* کارت اصلی */}
+    
     <div className="relative z-10 bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl w-full max-w-xl animate-in fade-in zoom-in duration-300 overflow-hidden">
       
-      {/* هدر رنگی بالای فرم */}
+     
       <div className="bg-gradient-to-r from-emerald-600 to-teal-500 p-8 text-center relative">
         <Link 
-          href="/" // مسیر صفحه لاگین رو اینجا بگذار
+          href="/" 
           className="absolute top-6 right-6 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-xl transition-all"
         >
           <ArrowRight className="w-5 h-5" />
@@ -192,7 +152,7 @@ return (
         <form onSubmit={handleSubmit(onHandleSubmit)} className="space-y-5">
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* نام و نام خانوادگی */}
+          
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-2">نام و نام خانوادگی</label>
               <input 
@@ -204,7 +164,7 @@ return (
               {errors.name && <p className="text-red-500 text-xs font-medium mt-1.5">{errors.name.message}</p>}
             </div>
 
-            {/* نام کلاس */}
+         
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-2">نام کلاس</label>
               <input 
@@ -217,7 +177,7 @@ return (
             </div>
           </div>
 
-          {/* ایمیل */}
+       
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">ایمیل</label>
             <input 
@@ -244,7 +204,7 @@ return (
               {errors.password && <p className="text-red-500 text-xs font-medium mt-1.5">{errors.password.message}</p>}
             </div>
 
-            {/* تکرار رمز عبور */}
+            {/* تکرار رمز  */}
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-2">تکرار رمز عبور</label>
               <input 
@@ -276,7 +236,6 @@ return (
             {isSubmitting ? (
               <Loader2 className="animate-spin h-5 w-5 text-white" />
             ) : (
-              // آیکون فلش برای زیبایی که موقع هاور حرکت میکنه
               <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             )}
           </button>

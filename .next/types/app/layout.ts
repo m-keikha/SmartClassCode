@@ -1,4 +1,4 @@
-// File: C:\Users\SAZGAR-PC\Downloads\school-project\app\layout.tsx
+// File: F:\SmartClassCodeGit\app\layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

@@ -59,11 +59,11 @@ export default function LoginPage() {
 
 if (mode === 'selection') {
     return (
-      // اضافه کردن یک لایه تیره و بلور روی پس‌زمینه برای خوانایی بهتر
+
       <div className="min-h-screen bg-[url('/nature.jpg')] bg-cover bg-center bg-fixed relative flex items-center justify-center p-4" dir="rtl">
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
         
-        {/* کارت اصلی */}
+
         <div className="relative z-10 bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl p-8 max-w-2xl w-full text-center transform transition-all">
           <div className="flex justify-center mb-4">
             <div className="bg-blue-50 p-4 rounded-full">
@@ -74,7 +74,7 @@ if (mode === 'selection') {
           <p className="text-sm text-gray-400 font-medium mb-10">طراحی و توسعه: مهدی کیخا</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* دکمه ورود همکار */}
+
             <button 
               onClick={() => setMode('teacher')} 
               className="group bg-white p-6 border-2 border-gray-100 hover:border-blue-500 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col items-center"
@@ -86,7 +86,7 @@ if (mode === 'selection') {
               <p className="text-sm text-gray-500 mt-2">پنل مدیریت و معلمان</p>
             </button>
 
-            {/* دکمه ورود دانش‌آموز */}
+
             <button 
               onClick={() => setMode('student')} 
               className="group bg-white p-6 border-2 border-gray-100 hover:border-emerald-500 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col items-center"
@@ -109,7 +109,7 @@ if (mode === 'selection') {
 
       <div className="relative z-10 bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl w-full max-w-md p-8 animate-in fade-in zoom-in duration-300">
         
-        {/* هدر صفحه ورود */}
+
         <div className="flex justify-between items-center mb-8">
           <button 
             onClick={() => { setMode('selection'); setError(''); }} 

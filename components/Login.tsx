@@ -14,7 +14,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [error, setError] = useState('');
 
   const handleTeacherLogin = () => {
-    // Simple mock authentication for demo
+
     if (password === 'admin') {
       onLogin({ role: 'teacher' });
     } else {

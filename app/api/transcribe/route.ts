@@ -1,9 +1,9 @@
 // app/api/transcribe/route.ts
 export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai'; // اضافه شدن کتابخانه رسمی
+import OpenAI from 'openai'; 
 
-export const maxDuration = 300; // تنظیم زمان اجرا به ۵ دقیقه
+export const maxDuration = 300; 
 
 export async function POST(request: NextRequest) {
     try {
@@ -28,16 +28,14 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'کلید API تنظیم نشده است' }, { status: 500 });
         }
 
-        // راه‌اندازی کلاینت OpenAI با تنظیمات اختصاصی برای اینترنت کند
         const openai = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY,
-            timeout: 300000, // ۵ دقیقه زمان برای کل عملیات (جلوگیری از قطع شدن)
-            maxRetries: 2,   // اگر در میانه راه قطع شد، ۲ بار دیگر به صورت خودکار تلاش کند
+            timeout: 300000, 
+            maxRetries: 2,  
         });
 
         console.log(`در حال ارسال فایل ${audioFile.name} با حجم ${(audioFile.size / 1024 / 1024).toFixed(2)} MB از طریق OpenAI SDK...`);
 
-        // ارسال مستقیم فایل به متد اختصاصی Whisper
         const transcription = await openai.audio.transcriptions.create({
             file: audioFile,
             model: 'whisper-1',
@@ -45,7 +43,6 @@ export async function POST(request: NextRequest) {
             timestamp_granularities: ['word']
         });
 
-        // برگرداندن نتیجه
         return NextResponse.json({
             success: true,
             text: transcription.text,

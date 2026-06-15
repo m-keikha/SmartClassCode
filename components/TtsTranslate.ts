@@ -24,9 +24,6 @@ export interface VipListening {
 
 // utils/audioUtils.ts
 export class AudioUtils {
-  /**
-   * تبدیل base64 به Blob
-   */
   static base64ToBlob(base64: string, contentType: string): Blob {
     const binaryString = window.atob(base64);
     const byteArray = new Uint8Array(binaryString.length);
@@ -38,25 +35,16 @@ export class AudioUtils {
     return new Blob([byteArray], { type: contentType });
   }
 
-  /**
-   * تبدیل Blob به File
-   */
   static blobToFile(blob: Blob, fileName: string, mimeType: string): File {
     return new File([blob], fileName, { type: mimeType });
   }
 
-  /**
-   * پاک کردن URL صوتی
-   */
   static revokeAudioUrl(url: string): void {
     if (url) {
       URL.revokeObjectURL(url);
     }
   }
 
-  /**
-   * ایجاد URL برای پخش صوت
-   */
   static createAudioUrl(blob: Blob): string {
     return URL.createObjectURL(blob);
   }
@@ -69,7 +57,7 @@ export class ErrorHandler {
    */
   static async handleApiError(
     response: Response,
-    defaultMessage: string
+    defaultMessage: string,
   ): Promise<never> {
     let errorMessage = defaultMessage;
 
@@ -87,9 +75,6 @@ export class ErrorHandler {
     throw new Error(errorMessage);
   }
 
-  /**
-   * مدیریت خطاهای عمومی
-   */
   static handleGeneralError(err: unknown): string {
     if (err instanceof TypeError && err.message === "Failed to fetch") {
       return "خطا در اتصال به سرور. لطفاً اتصال اینترنت خود را بررسی کنید";
@@ -102,9 +87,6 @@ export class ErrorHandler {
 
 // services/translationService.ts
 export class TranslationService {
-  /**
-   * ترجمه متن - با آرایه کلمات (سازگار با API شما)
-   */
   static async translateText(text: string[]): Promise<TranslationResult> {
     if (!text || text.length === 0) {
       throw new Error("لطفاً متن را وارد کنید");
@@ -129,9 +111,6 @@ export class TranslationService {
     };
   }
 
-  /**
-   * ترجمه متن - ورژن ساده که رشته قبول می‌کنه
-   */
   static async translateTextString(text: string): Promise<TranslationResult> {
     if (!text || !text.trim()) {
       throw new Error("لطفاً متن را وارد کنید");
@@ -144,14 +123,11 @@ export class TranslationService {
 
 // services/ttsService.ts
 export class TTSService {
-  /**
-   * تولید صدا با Gemini
-   */
   static async generateVoice(
     text: string,
     voiceName: string,
     model: "gemini" | "openAi" = "openAi",
-    apiNum: number = 1
+    apiNum: number = 1,
   ): Promise<Blob> {
     if (!text || !text.trim()) {
       throw new Error("لطفاً متن را وارد کنید");
@@ -174,7 +150,6 @@ export class TTSService {
       await ErrorHandler.handleApiError(response, "خطا در تولید صوت");
     }
 
-    // بررسی Content-Type
     const contentType = response.headers.get("Content-Type");
     if (!contentType || !contentType.includes("audio")) {
       throw new Error("فرمت پاسخ سرور معتبر نیست");
@@ -197,7 +172,7 @@ export class TranscriptionService {
    * تبدیل صدا به متن
    */
   static async transcribeAudio(
-    audioData: AudioType
+    audioData: AudioType,
   ): Promise<TranscriptionResponse> {
     if (!audioData || !audioData.data) {
       throw new Error("داده صوتی یافت نشد");
@@ -238,27 +213,27 @@ interface UseTtsTranslateReturn {
   audioUrl: string;
   translateText: (
     text: string,
-    onSuccess?: (result: TranslationResult) => void
+    onSuccess?: (result: TranslationResult) => void,
   ) => Promise<TranslationResult | null>;
   translateWords: (
     words: string[],
-    onSuccess?: (result: TranslationResult) => void
+    onSuccess?: (result: TranslationResult) => void,
   ) => Promise<TranslationResult | null>;
   generateAndProcessVoice: (
     text: string,
     voiceName: string,
     processAudioFile: (
-      file: File
+      file: File,
     ) => Promise<{ data?: AudioType; error?: string }>,
     onSuccess?: (
       audioData: AudioType,
       transcription: TranscriptionResponse,
-      translation: TranslationResult
-    ) => void
+      translation: TranslationResult,
+    ) => void,
   ) => Promise<boolean>;
   transcribeAudio: (
     audioData: AudioType,
-    onSuccess?: (result: TranscriptionResponse) => void
+    onSuccess?: (result: TranscriptionResponse) => void,
   ) => Promise<TranscriptionResponse | null>;
   cleanup: () => void;
 }
@@ -268,12 +243,9 @@ export function useTtsTranslate(): UseTtsTranslateReturn {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [audioUrl, setAudioUrl] = useState<string>("");
 
-  /**
-   * ترجمه متن (رشته)
-   */
   const translateText = async (
     text: string,
-    onSuccess?: (result: TranslationResult) => void
+    onSuccess?: (result: TranslationResult) => void,
   ): Promise<TranslationResult | null> => {
     try {
       setError("");
@@ -287,12 +259,9 @@ export function useTtsTranslate(): UseTtsTranslateReturn {
     }
   };
 
-  /**
-   * ترجمه با آرایه کلمات
-   */
   const translateWords = async (
     words: string[],
-    onSuccess?: (result: TranslationResult) => void
+    onSuccess?: (result: TranslationResult) => void,
   ): Promise<TranslationResult | null> => {
     try {
       setError("");
@@ -313,18 +282,17 @@ export function useTtsTranslate(): UseTtsTranslateReturn {
     text: string,
     voiceName: string,
     processAudioFile: (
-      file: File
+      file: File,
     ) => Promise<{ data?: AudioType; error?: string }>,
     onSuccess?: (
       audioData: AudioType,
       transcription: TranscriptionResponse,
-      translation: TranslationResult
-    ) => void
+      translation: TranslationResult,
+    ) => void,
   ): Promise<boolean> => {
     setIsLoading(true);
     setError("");
 
-    // پاک کردن URL قبلی
     AudioUtils.revokeAudioUrl(audioUrl);
     setAudioUrl("");
 
@@ -334,7 +302,7 @@ export function useTtsTranslate(): UseTtsTranslateReturn {
       const file = AudioUtils.blobToFile(
         audioBlob,
         "voice-audio.mp3",
-        audioBlob.type
+        audioBlob.type,
       );
 
       // پردازش فایل صوتی
@@ -346,7 +314,7 @@ export function useTtsTranslate(): UseTtsTranslateReturn {
 
       // تبدیل صدا به متن
       const transcription = await TranscriptionService.transcribeAudio(
-        audioData.data
+        audioData.data,
       );
 
       // ترجمه متن
@@ -356,7 +324,6 @@ export function useTtsTranslate(): UseTtsTranslateReturn {
       const url = AudioUtils.createAudioUrl(audioBlob);
       setAudioUrl(url);
 
-      // فراخوانی callback موفقیت
       onSuccess?.(audioData.data, transcription, translation);
 
       return true;
@@ -375,7 +342,7 @@ export function useTtsTranslate(): UseTtsTranslateReturn {
    */
   const transcribeAudio = async (
     audioData: AudioType,
-    onSuccess?: (result: TranscriptionResponse) => void
+    onSuccess?: (result: TranscriptionResponse) => void,
   ): Promise<TranscriptionResponse | null> => {
     setIsLoading(true);
     setError("");
@@ -394,9 +361,6 @@ export function useTtsTranslate(): UseTtsTranslateReturn {
     }
   };
 
-  /**
-   * پاک‌سازی منابع
-   */
   const cleanup = (): void => {
     AudioUtils.revokeAudioUrl(audioUrl);
     setAudioUrl("");
@@ -414,11 +378,6 @@ export function useTtsTranslate(): UseTtsTranslateReturn {
   };
 }
 
-// ============================================
-// نمونه استفاده در کامپوننت
-// ============================================
-
-// مثال 1: استفاده ساده از ترجمه
 async function example1_SimpleTranslation() {
   try {
     const text = "Hello World";
@@ -430,7 +389,7 @@ async function example1_SimpleTranslation() {
   }
 }
 
-// مثال 2: استفاده از ترجمه با آرایه کلمات
+
 async function example2_TranslateWords() {
   try {
     const words = ["Hello", "World", "Goodbye"];
@@ -441,18 +400,18 @@ async function example2_TranslateWords() {
   }
 }
 
-// مثال 3: تولید صدا
+
 async function example3_GenerateVoice() {
   try {
     const text = "Hello, how are you?";
     const voiceName = "en-US-Neural2-A";
     const audioBlob = await TTSService.generateVoice(text, voiceName);
 
-    // ایجاد URL برای دانلود
+
     const url = AudioUtils.createAudioUrl(audioBlob);
     console.log("URL صوتی:", url);
 
-    // دانلود فایل
+
     const a = document.createElement("a");
     a.href = url;
     a.download = "voice.mp3";
@@ -465,7 +424,7 @@ async function example3_GenerateVoice() {
   }
 }
 
-// مثال 4: تبدیل صدا به متن
+
 async function example4_TranscribeAudio(audioData: AudioType) {
   try {
     const result = await TranscriptionService.transcribeAudio(audioData);
@@ -475,7 +434,7 @@ async function example4_TranscribeAudio(audioData: AudioType) {
   }
 }
 
-// مثال 5: استفاده در کامپوننت واقعی با Hook
+
 function example5_UseInComponent() {
   const {
     error,
@@ -488,7 +447,7 @@ function example5_UseInComponent() {
     cleanup,
   } = useTtsTranslate();
 
-  // تابع ترجمه ساده
+
   const handleTranslate = async (text: string) => {
     const result = await translateText(text);
     if (result) {
@@ -496,7 +455,7 @@ function example5_UseInComponent() {
     }
   };
 
-  // تابع ترجمه با callback
+
   const handleTranslateWithCallback = async (text: string) => {
     await translateText(text, (result) => {
       console.log("ترجمه:", result.completeTranslation);
@@ -524,11 +483,11 @@ function example5_UseInComponent() {
         console.log("صدا تولید شد");
         console.log("متن:", transcription.text);
         console.log("ترجمه:", translation.completeTranslation);
-      }
+      },
     );
   };
 
-  // پاک‌سازی هنگام unmount
+
   useEffect(() => {
     return () => cleanup();
   }, []);
@@ -543,7 +502,7 @@ function example5_UseInComponent() {
   };
 }
 
-// مثال 6: استفاده در کد قبلی شما
+
 export default function TtsTranslate() {
   const [question, setQuestion] = useState<any>({});
   const { translateText, generateAndProcessVoice } = useTtsTranslate();
@@ -564,7 +523,7 @@ export default function TtsTranslate() {
 
   const handleGetVoiceGemini = async (text: string, voiceName: string) => {
     const processAudioFile = async (file: File) => {
-      // پیاده‌سازی تابع پردازش فایل صوتی شما
+
       return { data: { data: "", contentType: "audio/mpeg" } };
     };
 
@@ -583,7 +542,7 @@ export default function TtsTranslate() {
             transcription: transcription,
           },
         }));
-      }
+      },
     );
   };
 

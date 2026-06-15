@@ -8,10 +8,8 @@ interface User {
 
 export async function POST(request: NextRequest) {
     try {
-        // ۱. اطمینان از اتصال به دیتابیس
         await connectDB();
 
-        // ۲. استخراج دیتابیس از طریق mongoose
         const db = mongoose.connection.db;
         if (!db) {
             throw new Error("دیتابیس در دسترس نیست");
@@ -19,7 +17,6 @@ export async function POST(request: NextRequest) {
 
         const collection = db.collection("TEACHERS_INFORMATION");
 
-        // ۳. دریافت داده از ریکوئست
         const body: User = await request.json();
         
         if (!body.email) {
@@ -28,7 +25,6 @@ export async function POST(request: NextRequest) {
 
         console.log("Checking email:", body.email);
 
-        // ۴. جستجوی کاربر
         const user = await collection.findOne({ email: body.email.toLowerCase() });
 
         if (user) {
@@ -39,7 +35,6 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        // اگر کاربر پیدا نشد
         return NextResponse.json({ 
             success: true, 
             exist: false, 

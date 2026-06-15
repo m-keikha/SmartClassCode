@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// گرفتن کلید از متغیرهای محیطی
+// گرفتن کلید از متغیرهای محیط
 const apiKey = process.env.GEMINI_API_KEY;
 
 if (!apiKey) {
@@ -9,12 +9,15 @@ if (!apiKey) {
 
 const genAI = new GoogleGenerativeAI(apiKey);
 
-export async function transcribeAudioService(base64Audio: string, mimeType: string) {
-  // استفاده از مدل فلش که برای پردازش سریع فایل‌های مالتی‌مدیا عالیه
+export async function transcribeAudioService(
+  base64Audio: string,
+  mimeType: string,
+) {
   const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
 
   // پرامپت دقیق برای تبدیل صدا به متن
-  const prompt = "این فایل صوتی را با دقت بالا به متن تبدیل کن. فقط متن داخل صدا را بنویس و هیچ توضیح اضافه‌ای نده.";
+  const prompt =
+    "این فایل صوتی را با دقت بالا به متن تبدیل کن. فقط متن داخل صدا را بنویس و هیچ توضیح اضافه‌ای نده.";
 
   const result = await model.generateContent([
     prompt,

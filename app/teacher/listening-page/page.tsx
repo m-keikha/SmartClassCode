@@ -6,13 +6,11 @@ import { getListeningTitlesByLevel } from '../../actions';
 import { Headphones, ChevronLeft, BookOpen, Loader2, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-// تعریف تایپ برای دیتا
 interface ListeningItem {
     _id: string;
     title: string;
 }
 
-// کامپوننت داخلی که از useSearchParams استفاده می‌کنه
 function ListeningContent() {
     const searchParams = useSearchParams();
     const level = searchParams.get('level');
@@ -37,7 +35,6 @@ function ListeningContent() {
                 const result = await getListeningTitlesByLevel(level);
                 console.log('Result:', result);
 
-                // بررسی اینکه result آرایه باشه
                 if (Array.isArray(result.data)) {
                     setData(result.data);
                 } else {
@@ -58,7 +55,6 @@ function ListeningContent() {
 
     return (
         <div className="min-h-screen bg-gray-50 p-6 dir-rtl text-right" dir="rtl">
-            {/* هدر صفحه */}
             <header className="max-w-4xl mx-auto mb-8 flex items-center justify-between bg-white p-6 rounded-2xl shadow-sm">
                 <div className="flex items-center gap-4">
                     <div className="bg-blue-100 p-3 rounded-xl">
@@ -74,7 +70,6 @@ function ListeningContent() {
             </header>
 
             <main className="max-w-4xl mx-auto">
-                {/* نمایش خطا */}
                 {error && (
                     <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-4">
                         <AlertCircle size={20} />
@@ -82,7 +77,6 @@ function ListeningContent() {
                     </div>
                 )}
 
-                {/* حالت بارگذاری */}
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-20">
                         <Loader2 className="animate-spin text-blue-500 mb-4" size={40} />
@@ -122,7 +116,6 @@ function ListeningContent() {
     );
 }
 
-// کامپوننت اصلی با Suspense
 export default function ListeningPage() {
     return (
         <Suspense fallback={

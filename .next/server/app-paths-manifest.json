@@ -1,7 +1,5 @@
 {
-  "/teacher/page": "app/teacher/page.js",
-  "/teacher/listening-page/page": "app/teacher/listening-page/page.js",
-  "/teacher/listening-page/run/page": "app/teacher/listening-page/run/page.js",
-  "/student/page": "app/student/page.js",
-  "/student/listening-page/run/page": "app/student/listening-page/run/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/student/select-letter/page": "app/student/select-letter/page.js",
+  "/student/select-letter/letter-view/page": "app/student/select-letter/letter-view/page.js"
 }

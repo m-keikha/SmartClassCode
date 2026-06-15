@@ -19,20 +19,20 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onLogout }) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [grades, setGrades] = useState<Grade[]>([]);
 
-  // UI States
+
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [showAddCourse, setShowAddCourse] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
-  // Forms
+  
   const [newStudent, setNewStudent] = useState({ firstName: '', lastName: '', nationalId: '', fatherName: '' });
   const [newCourseName, setNewCourseName] = useState('');
   const [newGrade, setNewGrade] = useState({ courseId: '', score: '', description: '' });
 
-  // Password Reset
+
   const [newPassword, setNewPassword] = useState('');
 
-  // AI Loading State
+
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [currentReport, setCurrentReport] = useState<AIReport | undefined>(undefined);
 
@@ -95,14 +95,14 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onLogout }) => {
     if (!selectedStudent) return;
     setIsGeneratingAI(true);
 
-    // اطمینان از اینکه studentId ها به رشته تبدیل می‌شن
+
     const studentGrades = grades.filter(
       g => g.studentId?.toString() === selectedStudent._id?.toString()
     );
 
     console.log('mmm');
 
-    // تبدیل selectedStudent به plain object قابل استفاده
+
     const safeStudent = {
       ...selectedStudent,
       _id: selectedStudent._id?.toString(),
@@ -123,7 +123,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onLogout }) => {
     );
 
     const report: AIReport = {
-      studentId: selectedStudent._id?.toString(), // تبدیل به رشته
+      studentId: selectedStudent._id?.toString(), 
       content: reportText,
       timestamp: Date.now(),
     };
@@ -172,7 +172,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onLogout }) => {
           </button>
         </aside>
 
-        {/* Main Content */}
+
         <main className="flex-1 bg-white rounded-2xl shadow-sm p-6 overflow-hidden">
 
           {selectedStudent ? (
@@ -250,9 +250,9 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onLogout }) => {
                   </div>
                 </div>
 
-                {/* AI & Settings Section */}
+
                 <div className="space-y-6">
-                  {/* AI Report Card */}
+
                   <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-5 rounded-xl border border-indigo-100">
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="font-bold text-indigo-900 flex items-center">
@@ -278,7 +278,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onLogout }) => {
                     )}
                   </div>
 
-                  {/* Password Management */}
+
                   <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
                     <h3 className="font-bold text-gray-700 mb-3 flex items-center">
                       <Key className="w-5 h-5 ml-2" />

@@ -123,7 +123,6 @@ function WordSelectorModal({
                             کلمه‌ای که می‌خواهید سوال بعد از آن پرسیده شود را انتخاب کنید
                         </h3>
 
-                        {/* نمایش کلمات */}
                         <div className="flex flex-wrap gap-2 max-h-60 overflow-y-auto p-3 bg-gray-50 dark:bg-slate-700 rounded-xl mb-4">
                             {words.map((wordObj, index) => (
                                 <span
@@ -140,14 +139,12 @@ function WordSelectorModal({
                             ))}
                         </div>
 
-                        {/* پیش‌نمایش انتخاب */}
                         {tempSelected !== null && (
                             <p className="text-center text-sm text-indigo-600 dark:text-indigo-300 mb-3">
                                 سوال بعد از کلمه <strong>«{words[tempSelected]?.word}»</strong> پرسیده می‌شود
                             </p>
                         )}
 
-                        {/* دکمه‌ها */}
                         <div className="flex gap-3 justify-center">
                             <button
                                 onClick={handleConfirm}
@@ -240,7 +237,6 @@ export function Listening() {
 
 
 
-    // بارگذاری داده از IndexedDB
     useEffect(() => {
 
         async function load() {
@@ -254,7 +250,6 @@ export function Listening() {
                 if (listening) {
                     setListeningData(listening);
 
-                    // ساخت URL برای پخش صوت
                     const voiceData = listening.vipListeningVoice?.data;
                     const voiceType = listening.vipListeningVoice?.contentType;
 
@@ -280,7 +275,6 @@ export function Listening() {
         }
         load();
 
-        // پاکسازی URL هنگام unmount
         return () => {
             if (audioUrl) {
                 URL.revokeObjectURL(audioUrl);
@@ -299,7 +293,6 @@ export function Listening() {
     }, [audioUrl])
 
 
-    // ارسال فایل به API و دریافت transcription
     const handleTranscribe = async () => {
         if (!listeningData) {
             setError('داده صوتی یافت نشد');
@@ -376,20 +369,6 @@ export function Listening() {
     };
 
 
-    // const handleHoverWord = (index: number, word?: string) => {
-
-
-    //     const newTranslate = listeningData?.vipListening?.translate_per_word[index].translate
-    //     const isDependentPharse = listeningData?.vipListening?.translate_per_word[index].dependent_phrase
-    //     const translateDependentPharse = listeningData?.vipListening?.translate_per_word[index].translate_dependent_phrase
-    //     if (isDependentPharse) setTranslateWord({ word: newTranslate ?? '', index: index, phrasalWerb: isDependentPharse, translatePharseWerb: translateDependentPharse })
-    //     else setTranslateWord({ word: newTranslate ?? '', index: index })
-
-
-    //     console.log(newTranslate)
-
-    // }
-
 
     // هایلایت کردن کلمه بر اساس زمان پخش
     useEffect(() => {
@@ -411,7 +390,6 @@ export function Listening() {
         };
     }, [words]);
 
-    // رفتن به کلمه خاص با کلیک
     const handleWordClick = (index: number) => {
         if (audioRef.current && words[index]) {
             audioRef.current.currentTime = words[index].start;
@@ -591,7 +569,6 @@ export function Listening() {
                         </p>
                     </div>
 
-                    {/* نمایش خطا */}
                     {error && (
                         <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-lg animate-shake">
                             <div className="flex items-center gap-2">
@@ -605,7 +582,6 @@ export function Listening() {
 
 
 
-                    {/* نمایش متن با هایلایت کلمات */}
                     {words.length > 0 && (
                         <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700 rounded-2xl p-6 sm:p-8 shadow-inner">
 
@@ -784,7 +760,6 @@ export function Listening() {
 
                             </div>
 
-                            {/* اطلاعات اضافی */}
                             <div className="grid  gap-4 pt-6 border-t border-gray-200 dark:border-gray-600 ">
 
 

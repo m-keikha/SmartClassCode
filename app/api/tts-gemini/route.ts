@@ -61,7 +61,7 @@ function createWavHeader(dataLength: number, options: WavConversionOptions): Buf
 function convertToWav(rawData: string, mimeType: string): Buffer {
     const options = parseMimeType(mimeType);
     const buffer = Buffer.from(rawData, 'base64');
-    const wavHeader = createWavHeader(buffer.length, options); // اصلاح: طول بافر به جای طول رشته
+    const wavHeader = createWavHeader(buffer.length, options); 
     return Buffer.concat([wavHeader, buffer]);
 }
 
@@ -115,7 +115,6 @@ export async function POST(request: NextRequest) {
             },
         ];
 
-        // تغییر مهم: استفاده از حالت معمولی به جای استریم برای پایداری در فایل‌های صوتی
         const response = await ai.models.generateContent({
             model,
             config,
@@ -136,7 +135,6 @@ export async function POST(request: NextRequest) {
         let fileExtension = mime.getExtension(inlineData.mimeType || '');
         let finalBuffer: Buffer;
 
-        // فقط یک بار هدر را اضافه می‌کنیم
         if (!fileExtension) {
             finalBuffer = convertToWav(inlineData.data || '', inlineData.mimeType || '');
         } else {
@@ -155,7 +153,6 @@ export async function POST(request: NextRequest) {
     } catch (error: any) {
         console.error('خطا در تولید صوت:', error);
         
-        // مدیریت بهتر پیام خطای گوگل
         const isRateLimit = error?.status === 429 || error?.message?.includes('429');
         
         return NextResponse.json(

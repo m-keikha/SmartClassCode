@@ -1,8 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { Student, Grade, Course } from "../types";
 
-// Note: In a real app, never expose API keys on the client side.
-// This is for demonstration purposes as per instructions.
+
 const apiKey = process.env.GEMINI_API_KEY || ''; 
 
 const ai = new GoogleGenAI({ apiKey });

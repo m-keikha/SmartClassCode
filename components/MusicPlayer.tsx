@@ -20,7 +20,7 @@ const AudioPlayer = forwardRef<HTMLAudioElement, AudioPlayerProps>(
       const updateTime = () => setCurrentTime(audio.currentTime);
       const updateDuration = () => setDuration(audio.duration);
       const handleEnded = () => setIsPlaying(false);
-      // sync if paused externally (e.g. when question appears)
+
       const handlePause = () => setIsPlaying(false);
       const handlePlay = () => setIsPlaying(true);
 
@@ -69,7 +69,6 @@ const AudioPlayer = forwardRef<HTMLAudioElement, AudioPlayerProps>(
         {/* نوار فشرده */}
         <div className="flex items-center gap-2.5">
 
-          {/* دکمه play/pause کوچک */}
           <button
             onClick={togglePlay}
             className="w-8 h-8 flex-shrink-0 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow hover:shadow-purple-400/50 hover:scale-110 active:scale-95 transition-all"

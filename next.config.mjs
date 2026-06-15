@@ -3,15 +3,15 @@ const nextConfig = {
   experimental: {
     serverActions: {
       allowedOrigins: ["localhost:3000"],
-      bodySizeLimit: '10mb', // مقدار مورد نظر خود را اینجا بنویسید
+      bodySizeLimit: '10mb', 
     },
   },
   typescript: {
-    // نادیده گرفتن خطاهای تایپ‌اسکریپت برای انجام بیلد
+
     ignoreBuildErrors: true,
   },
   eslint: {
-    // نادیده گرفتن خطاهای لیتینگ
+
     ignoreDuringBuilds: true,
   },
 };

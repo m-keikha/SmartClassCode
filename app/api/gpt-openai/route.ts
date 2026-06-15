@@ -9,15 +9,13 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         
-        // استخراج پارامترهای داینامیک از درخواست
         const { 
             systemPrompt, 
             userContent, 
-            isJsonMode = true, // پیش‌فرض روی JSON است چون معمولا دیتای ساختاریافته می‌خواهیم
+            isJsonMode = true, 
             temperature = 0.1 
         } = body;
 
-        // اعتبارسنجی ورودی‌ها
         if (!systemPrompt || !userContent) {
             return NextResponse.json(
                 { error: 'پارامترهای systemPrompt و userContent الزامی هستند.' },
@@ -25,16 +23,13 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // تبدیل محتوای کاربر به رشته (اگر آبجکت یا آرایه فرستاده بود)
         const contentString = typeof userContent === 'string' 
             ? userContent 
             : JSON.stringify(userContent);
 
-        // ارسال درخواست به OpenAI
         const response = await openai.chat.completions.create({
             model: 'gpt-4o-mini',
             temperature: temperature,
-            // اگر isJsonMode فعال باشد، مدل را مجبور می‌کنیم فقط JSON معتبر برگرداند
             response_format: isJsonMode ? { type: 'json_object' } : { type: 'text' },
             messages: [
                 {
@@ -54,7 +49,6 @@ export async function POST(request: NextRequest) {
             throw new Error('محتوایی از هوش مصنوعی دریافت نشد');
         }
 
-        // پردازش خروجی بر اساس مود انتخابی
         let finalResult = aiContent;
         if (isJsonMode) {
             finalResult = JSON.parse(aiContent);

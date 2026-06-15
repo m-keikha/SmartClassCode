@@ -5,7 +5,7 @@ const classSchema = new Schema({
   className: String,
   teacherName: String,
   schoolName: String,
-  password: { type: String, required: true }, // اضافه شده برای لاگین
+  password: { type: String, required: true }, 
   userName: { type: String, required: true, unique: true }, // اضافه شده برای لاگین
   role: { type: String, default: "teacher", required: true },
 });
@@ -32,14 +32,14 @@ const studentSchema = new Schema({
   ],
 });
 
-// Course Schema
+
 const courseSchema = new Schema({
   classId: { type: Schema.Types.ObjectId, ref: "Class", index: true },
 
   name: String,
 });
 
-// Grade Schema
+
 const gradeSchema = new Schema({
   classId: {
     type: Schema.Types.ObjectId,
@@ -54,7 +54,7 @@ const gradeSchema = new Schema({
   date: String,
 });
 
-// Attendance Schema
+
 const attendanceSchema = new Schema({
   classId: {
     type: Schema.Types.ObjectId,
@@ -62,7 +62,7 @@ const attendanceSchema = new Schema({
     index: true,
   },
   studentId: { type: Schema.Types.ObjectId, ref: "Student" },
-  date: String, // ISO String YYYY-MM-DD
+  date: String, 
   status: { type: String, enum: ["absent", "present"], default: "absent" },
 });
 
@@ -79,7 +79,7 @@ const StudentsReadingResponseSchema = new Schema({
 // if (models.StudentResponse) {
 //   delete mongoose.models.StudentResponse;
 // }
-// Homework Schema
+
 const homeworkSchema = new Schema({
   classId: {
     type: Schema.Types.ObjectId,
@@ -121,29 +121,29 @@ const ListeningSchema = new Schema(
     level: {
       type: String,
       // required: [true, "سطح الزامی است"],
-      enum: ["اول", "دوم", "سوم", "چهارم", "پنجم", "ششم"], // محدود کردن مقادیر به تایپ شما
+      enum: ["اول", "دوم", "سوم", "چهارم", "پنجم", "ششم"], 
     },
 
     text: {
       type: String,
     },
-    // تعریف vipListening به صورت یک شیء اختیاری
+
     vipListening: {
       voiceName: { type: String },
       text: { type: String },
-      transcription: { type: Schema.Types.Mixed }, // چون TranscriptionResponse ساختار پیچیده‌ای دارد
+      transcription: { type: Schema.Types.Mixed }, 
     },
-    // تعریف vipListeningVoice به صورت اختیاری
+
     vipListeningVoice: {
-      type: Schema.Types.Mixed, // یا اگر AudioType مشخصات خاصی دارد، اینجا جزئی‌تر بنویس
+      type: Schema.Types.Mixed, 
     },
   },
   {
-    timestamps: true, // اضافه کردنCreatedAt و UpdatedAt به صورت خودکار
+    timestamps: true, 
   },
 );
 
-// AI Report Schema
+
 const reportSchema = new Schema({
   classId: {
     type: Schema.Types.ObjectId,
@@ -159,6 +159,47 @@ const reportSchema = new Schema({
 if (models.Class) {
   delete models.Class;
 }
+
+
+
+
+
+const MediaVariantSchema = new Schema({
+  text: { type: String, required: true },
+  imageUrl: { type: String, default: '' },
+  imagePublicId: { type: String, default: '' },
+  audioUrl: { type: String, default: '' },
+  audioPublicId: { type: String, default: '' },
+});
+
+const SentenceVariantSchema = new Schema({
+  text: { type: String, required: true },
+  audioUrl: { type: String, default: '' },
+  audioPublicId: { type: String, default: '' },
+});
+
+const AlphabetSchema = new Schema(
+  {
+    letterGroup: { 
+      type: String, 
+      required: [true, 'نام گروه حرف الفبایی الزامی است'], 
+      unique: true, 
+      trim: true 
+    },
+    letterVariants: [MediaVariantSchema],
+    examples: [MediaVariantSchema],
+    sentences: [SentenceVariantSchema],
+  },
+  { 
+    timestamps: true 
+  }
+);
+
+
+
+
+
+
 
 export const ListeningModel =
   models.Listening || model("Listening", ListeningSchema);
@@ -178,3 +219,4 @@ export const AttendanceModel =
 export const HomeworkModel =
   models.Homework || model("Homework", homeworkSchema);
 export const ReportModel = models.Report || model("Report", reportSchema);
+export const Alphabet = models.Alphabet || model('Alphabet', AlphabetSchema);

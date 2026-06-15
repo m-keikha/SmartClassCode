@@ -22,7 +22,7 @@ const Toast: React.FC<ToastProps> = ({
                 onClose();
             }, duration);
 
-            return () => clearTimeout(timer); // پاکسازی تایمر در صورت بستن دستی
+            return () => clearTimeout(timer); 
         }
     }, [isVisible, duration, onClose]);
 
@@ -40,7 +40,6 @@ const Toast: React.FC<ToastProps> = ({
             <div className={`${bgColor} text-white px-6 py-3 rounded-2xl shadow-lg flex items-center gap-3 min-w-[300px] justify-between`}>
                 <span className="font-medium text-sm">{message}</span>
 
-                {/* دکمه بستن دستی */}
                 <button onClick={onClose} className="hover:rotate-90 transition-transform duration-200">
                     ✕
                 </button>

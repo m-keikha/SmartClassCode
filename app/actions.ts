@@ -14,6 +14,7 @@ import {
   ReportModel,
   QuestionModel,
   StudentResponseModel,
+  Alphabet,
 } from "@/models";
 import { GoogleGenAI } from "@google/genai";
 import { revalidatePath } from "next/cache";
@@ -43,7 +44,6 @@ interface ListeningDetail {
 
 export type Level = "اول" | "دوم" | "سوم" | "چهارم" | "پنجم" | "ششم";
 
-// --- Initialization ---
 export async function seedData() {
   await connectDB();
   const count = await CourseModel.countDocuments();
@@ -56,7 +56,6 @@ export async function seedData() {
   }
 }
 
-// --- Fetching ---
 export async function getTeacherData() {
   const cookieStore = await cookies();
 
@@ -78,7 +77,6 @@ export async function getTeacherData() {
     HomeworkModel.find({ classId }).sort({ createdAt: -1 }) as any
   ).lean();
 
-  // Convert _id to string for serialization
   const serialize = (arr: any[]) =>
     arr.map((item) => ({ ...item, _id: item._id.toString() }));
 
@@ -103,14 +101,13 @@ export async function getListeningById(
     }
 
     const listening = await ListeningModel.findById(id)
-      .populate("classId", "name") // اگر می‌خواید اطلاعات کلاس رو هم بگیرید
+      .populate("classId", "name")
       .lean();
 
     if (!listening) {
       return null;
     }
 
-    // تبدیل به فرمت مناسب برای client
     return {
       _id: listening._id.toString(),
       classId: listening.classId?.toString(),
@@ -133,7 +130,6 @@ export async function studentScoreById(studentId: string) {
 
   const students = await (GradeModel as any).find({ studentId }).lean();
 
-  // تبدیل کل آبجکت به یک Plain Object استاندارد برای Next.js
   const serializedStudents = JSON.parse(JSON.stringify(students));
 
   return {
@@ -151,7 +147,6 @@ export async function getCourses() {
 
   const courses = await (CourseModel as any).find({ classId }).lean();
 
-  // تبدیل کل آبجکت به یک Plain Object استاندارد برای Next.js
   const serializedCourses = JSON.parse(JSON.stringify(courses));
 
   return {
@@ -166,7 +161,6 @@ export async function checkStudentLogin(nationalId: string) {
     .find({ nationalId: nationalId })
     .lean();
 
-  // تبدیل کل آبجکت به یک Plain Object استاندارد برای Next.js
   const serializedStudents = JSON.parse(JSON.stringify(students));
 
   return {
@@ -223,16 +217,14 @@ export async function postQuestion(data: any, id) {
 export async function getListeningTitlesByLevel(level: string) {
   try {
     await connectDB();
-    // اعتبارسنجی level
     const validLevels = ["اول", "دوم", "سوم", "چهارم", "پنجم", "ششم"];
     if (!validLevels.includes(level)) {
       throw new Error("سطح وارد شده معتبر نیست");
     }
 
-    // جستجو در دیتابیس و انتخاب فقط title و id
     const listenings = await ListeningModel.find({ level })
       .select("_id title") // فقط _id و title برگردانده می‌شود
-      .lean(); // برای بهبود performance
+      .lean();
 
     // فرمت کردن نتایج
     const result = listenings.map((item) => ({
@@ -285,7 +277,6 @@ export async function getStudentData(studentId: string) {
 export async function checkExistingUser(email: string) {
   await connectDB();
 
-  // ۱. پیدا کردن معلم بر اساس userName (ایمیل)
   const teacherClass = await ClassModel.findOne({ userName: email });
 
   if (teacherClass) {
@@ -310,7 +301,6 @@ export async function checkAccessAdmin() {
 
   await connectDB();
 
-  // ۱. پیدا کردن معلم بر اساس userName (ایمیل)
   const teacherClass = await ClassModel.findById(classId);
 
   if (teacherClass.role === "adminstor") {
@@ -322,30 +312,24 @@ export async function checkAccessAdmin() {
   }
 }
 
-// --- Mutations ---
-
 export async function loginTeacher(email: string, password: string) {
   try {
     await connectDB();
 
-    // ۱. پیدا کردن معلم بر اساس userName (ایمیل)
     const teacherClass = await ClassModel.findOne({ userName: email });
 
     if (!teacherClass) {
       return { success: false, error: "کاربری با این ایمیل یافت نشد." };
     }
 
-    // ۲. بررسی پسورد (اگر هش کردید از bcrypt.compare استفاده کنید)
     if (teacherClass.password !== password) {
       return { success: false, error: "رمز عبور اشتباه است." };
     }
 
-    // ۳. ایجاد کوکی برای لاگین ماندن (بسیار مهم)
-    // ما ID کلاس را به صورت استرینگ ذخیره می‌کنیم
     const cookieStore = await cookies();
 
     cookieStore.set("teacher_session", teacherClass._id.toString(), {
-      httpOnly: true, // امنیت: دسترسی از طریق جاوااسکریپت فرانت‌اِند ممکن نباشد
+      httpOnly: true,
       secure: process.env.NODE_ID === "production",
       maxAge: 60 * 60 * 24 * 7, // انقضا: ۷ روز
       path: "/",
@@ -428,10 +412,8 @@ export async function addStudentResponse(
   const student: any = await StudentModel.findById(studentId).lean();
   if (!student) return { success: false, message: "Student not found" };
 
-  // اضافه کردن listeningId به دیتا اگر داخلش نیست (برای اطمینان از جستجوهای بعدی)
   const finalData = { ...data, listeningId: listeningId };
 
-  // ۱. تلاش برای آپدیت سوالی که از قبل در آرایه وجود دارد
   let result = await StudentResponseModel.findOneAndUpdate(
     {
       studentId: studentId,
@@ -444,7 +426,6 @@ export async function addStudentResponse(
     { new: true },
   );
 
-  // ۲. اگر مرحله ۱ چیزی پیدا نکرد (یا داکیومنت نیست یا سوال در آرایه نیست)
   if (!result) {
     result = await StudentResponseModel.findOneAndUpdate(
       { studentId: studentId, classId: student.classId },
@@ -536,22 +517,19 @@ export async function removeGrade(gradeId: any) {
   if (result) return { success: true, message: "عملیات موفق", result: result };
 }
 
-
-
 export async function addAttendance(studentId: string, date: string) {
   const cookieStore = await cookies();
 
   const session = cookieStore.get("teacher_session");
 
-  // بررسی اینکه آیا معلم لاگین هست یا خیر
   if (!session || !session.value) {
     return { error: "عدم دسترسی: لطفاً ابتدا وارد شوید." };
   }
 
-  const classId = session.value; // آیدی کلاس که از کوکی گرفتیم
+  const classId = session.value;
 
   await connectDB();
-  // Check if exists
+
   const exists = await AttendanceModel.findOne({ studentId, date });
   if (!exists) {
     await AttendanceModel.create({
@@ -575,7 +553,6 @@ export async function removeStudent(studentId: string) {
   const deletedStudent = await StudentModel.findByIdAndDelete(studentId);
 
   if (!deletedStudent) {
-    // یعنی هیچ دانشجویی با این آی‌دی پیدا نشد که پاک بشه
     console.log("موردی پیدا نشد!");
   } else {
     console.log("دانشجو با موفقیت حذف شد:", deletedStudent.firstName);
@@ -592,7 +569,6 @@ export async function removeCourse(courseId: string) {
   const deletedCourse = await CourseModel.findByIdAndDelete(courseId);
 
   if (!deletedCourse) {
-    // یعنی هیچ دانشجویی با این آی‌دی پیدا نشد که پاک بشه
     console.log("موردی پیدا نشد!");
   } else {
     console.log("درس موردنظر با موفقیت حذف شد:", deletedCourse.firstName);
@@ -624,7 +600,6 @@ export async function saveAIReport(studentId: string, content: string) {
   revalidatePath("/teacher");
 }
 
-// --- AI Generation ---
 export async function generateAIReportAction(
   student: any,
   grades: any[],
@@ -668,10 +643,8 @@ export async function generateAIReportAction(
 export async function logoutAction() {
   const cookieStore = await cookies();
 
-  // پاک کردن کوکی سشن
   cookieStore.delete("teacher_session");
 
-  // اگر کوکی‌های دیگری هم داری اینجا پاک کن
   return { success: true };
 }
 
@@ -681,4 +654,47 @@ export async function loginCheck() {
 
   if (classId) return { success: true };
   if (!classId) return { success: false, error: "عدم دسترسی" };
+}
+
+export async function getAlphabetsList() {
+  try {
+    await connectDB();
+
+    const alphabets = await Alphabet.find({}).select("_id letterGroup").lean();
+
+    const formattedData = alphabets.map((item: any) => ({
+      _id: item._id.toString(),
+      letterGroup: item.letterGroup,
+    }));
+
+    return { success: true, data: formattedData };
+  } catch (error) {
+    console.error("خطا در دریافت لیست الفبا:", error);
+    return {
+      success: false,
+      error: "مشکلی در دریافت اطلاعات از سرور پیش آمد.",
+    };
+  }
+}
+
+export async function getAlphabetById(id: string) {
+  try {
+    await connectDB();
+
+    const alphabet = await Alphabet.findById(id).lean();
+
+    if (!alphabet) {
+      return { success: false, error: "حرف مورد نظر یافت نشد." };
+    }
+
+    const plainResult = JSON.parse(JSON.stringify(alphabet));
+
+    return { success: true, data: plainResult };
+  } catch (error) {
+    console.error("خطا در دریافت اطلاعات حرف الفبا:", error);
+    return {
+      success: false,
+      error: "خطای برقراری ارتباط با سرور.",
+    };
+  }
 }

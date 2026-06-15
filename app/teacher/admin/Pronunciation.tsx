@@ -38,15 +38,12 @@ export default function Pronunciation({ setQuestion,
 
         setIsLoading(true)
 
-        //جنریت صدا
-
 
         let audioArray = []
 
         for (let i = 0; i < question.options.length; i++) {
             const ttsOptionsGenerate = await TTSService.generateVoice(question.options[i], speakerName, 'openAi')
             const file = AudioUtils.blobToFile(ttsOptionsGenerate, `${question.options[i]}.mp3`, ttsOptionsGenerate.type);
-            // پردازش فایل صوتی
             const TTSWordOfText = await processAudioFile(file)
 
             audioArray.push(TTSWordOfText?.data)
@@ -89,53 +86,6 @@ export default function Pronunciation({ setQuestion,
                 placeholder='example: station'
             />
 
-
-            {/* <div className='mt-4'>
-
-                <label className='font-medium'>گزینه‌های سوال </label>
-                {question.options.map((opt, i) => (
-                    <div key={i} className="flex flex-row mt-2">
-                        <Input
-                            placeholder={`گزینه ${i + 1}`}
-                            type="text"
-                            value={opt}
-                            onChange={(e) => handleOptionsChange(e.target.value, i)}
-                            className="input border-1  rounded w-100 p-2 "
-                        />
-
-                        {question.options.length !== 1 && (
-                            <button
-                                className="bg-red-100 ml-2 text-red-500 md:p-2 p-0.5 mx-1  rounded-lg hover:bg-red-500 hover:text-white transition-all duration-200 flex items-center justify-center"
-                                onClick={() => handleDeleteOptInput( i)}
-                                key={i}
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        )}
-                        {
-                            <button
-                                onClick={() => handleAddOptions(qIndex, i)}
-                                className="flex items-center justify-center md:p-2 p-0.5 bg-emerald-100 text-emerald-600 border border-emerald-200 rounded-lg hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all duration-200 shadow-sm"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                </svg>
-                            </button>
-                        }
-                        {
-                            <button
-                                onClick={() => handleCorrectAnswer(allQuestion[qIndex].options[i], qIndex, i)}
-                                className={`flex text-sm items-center justify-center mx-2 md:p-2 p-0.5  text-emerald-600 border border-emerald-200 rounded-lg hover:bg-emerald-500 ${correctAnswer[qIndex].index === i ? 'bg-emerald-600 text-white' : 'bg-slate-200'}  hover:text-white hover:border-emerald-600 transition-all duration-200 shadow-sm`}
-                            >
-                                گزینه درست
-                            </button>
-                        }
-                    </div>
-                ))}
-
-            </div> */}
 
 
             <button

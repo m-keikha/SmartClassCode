@@ -4,7 +4,6 @@ import { useState, useRef, ReactNode, useEffect } from 'react';
 import { Mic, Square, Clipboard, ClipboardCheck, Loader2, Play } from 'lucide-react';
 import { teacherAccess } from '@/app/actions';
 
-// کامپوننت دکمه برای تمیزی بیشتر کد
 interface ActionButtonProps {
   onClick: () => void;
   children: ReactNode;
@@ -46,7 +45,6 @@ export default function VoiceRecorder() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<BlobPart[]>([]);
 
-  // ----------------- منطق اصلی برنامه -----------------
 
   const startRecording = async () => {
     try {
@@ -136,7 +134,6 @@ export default function VoiceRecorder() {
     }
   };
 
-  // ----------------- ظاهر و رابط کاربری -----------------
 
   return (
     <div className="min-h-screen bg-[url('/nature.jpg')] bg-gray-50 flex flex-col items-center justify-center p-6 font-sans">

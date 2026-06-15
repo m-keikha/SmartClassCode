@@ -9,7 +9,7 @@ const App: React.FC = () => {
   const [session, setSession] = useState<UserSession | null>(null);
 
   useEffect(() => {
-    // Populate local storage with some initial data if empty
+
     seedData();
   }, []);
 

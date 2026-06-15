@@ -36,7 +36,7 @@ interface IQuestionResponse {
 
 // اینترفیس برای کل داکیومنت پاسخ دانش‌آموز
 interface IStudentResponseDoc {
-    _id: string; // یا Types.ObjectId اگر در سمت سرور استفاده می‌کنید
+    _id: string;
     classId: string;
     studentId: string;
     questions: IQuestionResponse[];
@@ -44,7 +44,6 @@ interface IStudentResponseDoc {
     __v: number;
 }
 
-// اینترفیس خروجی تابع (Wrapper)
 interface IGetStudentResponseResult {
     success: boolean;
     result?: IStudentResponseDoc[];
@@ -69,17 +68,15 @@ export default function TeacherDashboard() {
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
-    // Forms
+
     const [newStudent, setNewStudent] = useState({ firstName: '', lastName: '', nationalId: '', fatherName: '' });
     const [newCourseName, setNewCourseName] = useState('');
-    // Grade date defaults to today
     const [newGrade, setNewGrade] = useState({ courseId: '', score: '', description: '', date: new Date().toLocaleDateString('fa-IR') });
     const [newHomework, setNewHomework] = useState({ title: '', description: '', dueDate: '', target: 'ALL' });
 
     const [studentReadingData, setstudentReadingData] = useState<IStudentResponseDoc[]>()
 
 
-    // Student Details Forms
     const [studentNote, setStudentNote] = useState('');
     const [studentPhone, setStudentPhone] = useState('');
     const [manualAbsenceDate, setManualAbsenceDate] = useState('');
@@ -110,7 +107,6 @@ export default function TeacherDashboard() {
                 router.push('/');
                 return window.location.href = '/'
             } else {
-                // اگر لاگین بود، دیتا را بارگذاری کن
                 loadData();
             }
 
@@ -121,7 +117,6 @@ export default function TeacherDashboard() {
 
     }, []);
 
-    // Update local state when a student is selected
     useEffect(() => {
         if (selectedStudent) {
             setStudentPhone(selectedStudent.phoneNumber || '');
@@ -131,7 +126,7 @@ export default function TeacherDashboard() {
 
 
 
-      const loadData = async () => {
+    const loadData = async () => {
         const name = localStorage.getItem('name')
         setTeacherName(name)
 
@@ -139,14 +134,13 @@ export default function TeacherDashboard() {
         if (res.error) return router.push('/')
         console.log(res)
         setData(res as any);
-        // If a student is selected, update their reference to show latest data
         if (selectedStudent) {
             const updatedStudent = (res as any).students.find((s: Student) => s._id === selectedStudent._id);
             if (updatedStudent) setSelectedStudent(updatedStudent);
         }
     };
-    
-   
+
+
 
     const handleLogout = async () => {
         localStorage.removeItem('user_role');
@@ -156,8 +150,7 @@ export default function TeacherDashboard() {
         router.push('/');
     };
 
-    // --- Logic Helpers ---
-    const getTodayDate = () => new Date().toLocaleDateString('fa-IR'); // Simple format for display/storage consistency
+    const getTodayDate = () => new Date().toLocaleDateString('fa-IR');
 
     const isAbsent = (studentId: string, date: string) => {
         return data?.attendance.some(a => a.studentId === studentId && a.date === date);
@@ -182,7 +175,6 @@ export default function TeacherDashboard() {
         return (sum / sGrades.length).toFixed(2);
     }
 
-    // --- Actions ---
 
     const handleAddStudent = async () => {
         if (!newStudent.firstName) return;
@@ -360,7 +352,6 @@ export default function TeacherDashboard() {
                     <h1 className="text-2xl font-extrabold text-gray-800">مدرسه هوشمند</h1>
                 </div>
 
-                {/* کارت خوش‌آمدگویی کاربر (فقط در دسکتاپ) */}
                 <div className="hidden md:block px-5 mt-6 mb-2">
                     <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 border border-blue-100/50 p-4 rounded-2xl shadow-sm">
                         <p className="text-xs text-gray-500 mb-1 font-medium">خوش آمدید،</p>
@@ -370,7 +361,6 @@ export default function TeacherDashboard() {
                     </div>
                 </div>
 
-                {/* لینک‌های ناوبری (در موبایل افقی، در دسکتاپ عمودی) */}
                 <nav className="flex flex-row md:flex-col justify-around md:justify-start w-full p-2 md:p-5 md:gap-2 overflow-y-auto">
 
                     {/* دکمه دانش‌آموزان */}
@@ -400,7 +390,6 @@ export default function TeacherDashboard() {
                         <span className={`text-[10px] md:text-sm font-medium ${activeTab === 'leaderboard' ? 'font-bold' : ''}`}>رتبه‌بندی</span>
                     </button>
 
-                    {/* دکمه خروج فقط برای موبایل (چون در دسکتاپ پایین سایدبار قرار می‌گیرد) */}
                     <button
                         onClick={handleLogout}
                         className="md:hidden flex flex-col items-center justify-center p-2 rounded-xl text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors flex-1"
@@ -410,7 +399,6 @@ export default function TeacherDashboard() {
                     </button>
                 </nav>
 
-                {/* دکمه خروج اصلی (فقط در دسکتاپ در پایین‌ترین قسمت سایدبار) */}
                 <div className="hidden md:block mt-auto p-5 border-t border-gray-100">
                     <button
                         onClick={handleLogout}
@@ -421,10 +409,9 @@ export default function TeacherDashboard() {
                     </button>
                 </div>
             </aside>
-            {/* Main Content */}
+
             <main className="flex-1 p-8 overflow-y-auto">
                 {selectedStudent ? (
-                    // --- Student Detail View ---
                     <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 animate-fade-in">
                         <div className="flex justify-between items-start mb-8 border-b border-gray-100 pb-6">
                             <div>
@@ -447,9 +434,7 @@ export default function TeacherDashboard() {
 
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
 
-                            {/* Left Column: Academics */}
                             <div className="space-y-6">
-                                {/* Add Grade Form */}
                                 <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200">
                                     <h3 className="font-bold text-gray-800 mb-4 flex items-center"><Plus className="w-5 h-5 ml-2 text-blue-600" /> ثبت نمره جدید</h3>
                                     <div className="grid grid-cols-2 gap-3 mb-3">
@@ -471,7 +456,6 @@ export default function TeacherDashboard() {
                                     <button onClick={handleAddGrade} className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 font-medium">ثبت نمره</button>
                                 </div>
 
-                                {/* Course Averages Table */}
                                 <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
                                     <div className="bg-gray-50 p-4 font-bold text-gray-700 border-b border-gray-200">وضعیت درسی (میانگین هر درس)</div>
                                     <table className="w-full text-sm">
@@ -508,14 +492,11 @@ export default function TeacherDashboard() {
 
                             </div>
 
-                            {/* Right Column: Attendance, Contact, AI */}
                             <div className="space-y-6">
 
-                                {/* Attendance Management */}
                                 <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm">
                                     <h3 className="font-bold text-gray-800 mb-4 flex items-center"><Calendar className="w-5 h-5 ml-2 text-orange-500" /> مدیریت حضور و غیاب</h3>
 
-                                    {/* Today Toggle */}
                                     <div className="flex items-center justify-between bg-orange-50 p-4 rounded-xl mb-4 border border-orange-100">
                                         <span className="text-orange-900 font-medium">وضعیت امروز ({getTodayDate()})</span>
                                         <label className="flex items-center cursor-pointer">
@@ -531,7 +512,6 @@ export default function TeacherDashboard() {
                                         </label>
                                     </div>
 
-                                    {/* Manual Date */}
                                     <div className="flex gap-2 mb-4 ">
                                         <input type="text" placeholder="تاریخ خاص (1404/xx/xx)" className="flex-1  w-28 p-3    rounded-xl border border-gray-200 text-sm outline-none focus:border-orange-500"
                                             value={manualAbsenceDate} onChange={e => setManualAbsenceDate(e.target.value)} />
@@ -541,7 +521,6 @@ export default function TeacherDashboard() {
                                         </button>
                                     </div>
 
-                                    {/* History */}
                                     <div>
                                         <p className="text-xs font-bold text-gray-400 mb-2">لیست غیبت‌های ثبت شده:</p>
                                         <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
@@ -555,7 +534,6 @@ export default function TeacherDashboard() {
                                     </div>
                                 </div>
 
-                                {/* Contact & Notes */}
                                 <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm">
                                     <h3 className="font-bold text-gray-800 mb-4 flex items-center"><Phone className="w-5 h-5 ml-2 text-purple-500" /> تماس و یادداشت</h3>
 
@@ -618,7 +596,6 @@ export default function TeacherDashboard() {
                         </div>
                     </div>
                 ) : (
-                    // --- Main Dashboard Views ---
                     <>
                         {activeTab === 'students' && (
                             <div className="animate-slide-up">
@@ -673,7 +650,6 @@ export default function TeacherDashboard() {
                                 {isShowStResponses && showLevels && (<StudentResponseGrid data={data} responses={studentReadingData} />)}
 
 
-                                {/* Create Homework Section */}
                                 {showAddHomework && (
                                     <div className="bg-white p-6 rounded-2xl mb-8 border border-purple-100 shadow-sm animate-fade-in">
                                         <h3 className="font-bold text-purple-900 mb-4 flex items-center"><FileText className="ml-2" /> تعریف تکلیف جدید</h3>
@@ -699,7 +675,6 @@ export default function TeacherDashboard() {
                                     </div>
                                 )}
 
-                                {/* Add Student Section */}
                                 {showAddStudent && (
                                     <div className="bg-blue-50 p-6 rounded-2xl mb-8 border border-blue-100 animate-fade-in">
                                         <h3 className="font-bold text-blue-900 mb-4">اطلاعات دانش‌آموز جدید</h3>
@@ -716,7 +691,6 @@ export default function TeacherDashboard() {
                                     </div>
                                 )}
 
-                                {/* Students Grid */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                     {data.students.map(student => {
                                         const todayAbsent = isAbsent(student._id, getTodayDate());
@@ -739,7 +713,6 @@ export default function TeacherDashboard() {
                                                     <span className="text-gray-500">معدل: <span className="font-bold text-gray-800">{getStudentAverage(student._id)}</span></span>
                                                 </div>
 
-                                                {/* Quick Attendance Badge */}
                                                 <div className={`absolute top-4 left-4 px-2 py-1 rounded-lg text-xs font-bold ${todayAbsent ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>
                                                     {todayAbsent ? 'غایب' : 'حاضر'}
                                                 </div>
