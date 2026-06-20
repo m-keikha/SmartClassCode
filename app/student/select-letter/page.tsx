@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAlphabetsList } from '@/app/actions';
+import { getAlphabetsList } from '@/app/actions'; 
 import { ChevronLeft, BookOpen, Loader2, AlertCircle, Type } from 'lucide-react';
+
 
 interface AlphabetItem {
     _id: string;
@@ -24,6 +25,7 @@ export default function AlphabetListPage() {
 
             try {
                 const result = await getAlphabetsList();
+                console.log('Result:', result);
 
                 if (result.success && Array.isArray(result.data)) {
                     setData(result.data);
@@ -32,7 +34,8 @@ export default function AlphabetListPage() {
                     setData([]);
                 }
             } catch (error) {
-                setError('خطا در دریافت اطلاعات. دوباره تلاش کنید.');
+                console.error("خطا در دریافت اطلاعات:", error);
+                setError('خطا در دریافت اطلاعات. لطفاً دوباره تلاش کنید.');
                 setData([]);
             } finally {
                 setLoading(false);
@@ -43,9 +46,9 @@ export default function AlphabetListPage() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-50 p-9 dir-rtl text-right" dir="rtl">
+        <div className="min-h-screen bg-gray-50 p-6 dir-rtl text-right" dir="rtl">
 
-            <header className="max-w-4xl  mx-auto mb-8 flex items-center justify-between bg-white p-6 rounded-2xl shadow-sm">
+            <header className="max-w-4xl mx-auto mb-8 flex items-center justify-between bg-white p-6 rounded-2xl shadow-sm">
                 <div className="flex items-center gap-4">
                     <div className="bg-blue-100 p-3 rounded-xl">
                         <Type className="text-blue-600" size={28} />
@@ -99,7 +102,7 @@ export default function AlphabetListPage() {
 
                     <div className="text-center py-20 bg-white rounded-2xl border-2 border-dashed border-gray-200">
                         <BookOpen className="mx-auto mb-4 text-gray-300" size={48} />
-                        <p className="text-gray-400">هنوز هیچ دیتایی توسط ادمین ثبت نشده:).</p>
+                        <p className="text-gray-400">هنوز هیچ حرفی در سیستم ثبت نشده است.</p>
                     </div>
                 )}
             </main>
