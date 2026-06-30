@@ -27,6 +27,7 @@ export default function StudentDashboard() {
         getStudentData(sId).then((res) => setData(res as any));
 
     }, []);
+    
 
     const handleLogout = () => {
         localStorage.removeItem('student_id');

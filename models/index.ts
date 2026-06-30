@@ -74,7 +74,7 @@ const StudentsReadingResponseSchema = new Schema({
     required: true,
   },
   studentId: { type: Schema.Types.ObjectId, ref: "Student", required: true },
-  questions: { type: [Schema.Types.Mixed], default: [] }, // صراحتاً بگو آرایه است  createdAt: { type: Date, default: Date.now },
+  questions: { type: [Schema.Types.Mixed], default: [] },
 });
 // if (models.StudentResponse) {
 //   delete mongoose.models.StudentResponse;

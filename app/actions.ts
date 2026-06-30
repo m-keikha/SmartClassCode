@@ -66,7 +66,7 @@ export async function getTeacherData() {
     return { error: "عدم دسترسی: لطفاً ابتدا وارد شوید." };
   }
 
-  const classId = session.value; // آیدی کلاس که از کوکی گرفتیم
+  const classId = session.value; 
 
   await connectDB();
   const students = await (StudentModel as any).find({ classId }).lean();

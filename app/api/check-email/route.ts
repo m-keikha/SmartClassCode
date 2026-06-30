@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import connectDB from "@/lib/db"; // متصل‌کننده دیتابیس شما
+import connectDB from "@/lib/db"; 
 import mongoose from "mongoose";
 
 interface User {
