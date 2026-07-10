@@ -73,7 +73,7 @@ export default function LoginPage() {
 
             <button
               onClick={() => setMode('teacher')}
-              className="group bg-white p-6 border-2 border-gray-100 hover:border-blue-500 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col items-center"
+              className="group bg-white p-6 border-2 border-gray-100 hover:border-blue-500 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:shadow-blue-300 flex flex-col items-center"
             >
               <div className="bg-blue-50 p-4 rounded-2xl mb-4 group-hover:bg-blue-600 transition-colors duration-300">
                 <UserRoundKey className="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />
@@ -82,10 +82,9 @@ export default function LoginPage() {
               <p className="text-sm text-gray-500 mt-2">پنل مدیریت و معلمان</p>
             </button>
 
-
             <button
               onClick={() => setMode('student')}
-              className="group bg-white p-6 border-2 border-gray-100 hover:border-emerald-500 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col items-center"
+              className="group bg-white p-6 border-2 border-gray-100 hover:border-emerald-500 rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-emerald-300 hover:-translate-y-1 flex flex-col items-center"
             >
               <div className="bg-emerald-50 p-4 rounded-2xl mb-4 group-hover:bg-emerald-600 transition-colors duration-300">
                 <GraduationCap className="w-8 h-8 text-emerald-600 group-hover:text-white transition-colors" />
@@ -93,6 +92,7 @@ export default function LoginPage() {
               <h3 className="text-xl font-bold text-gray-800 group-hover:text-emerald-600 transition-colors">پنل دانش‌آموزی</h3>
               <p className="text-sm text-gray-500 mt-2">مشاهده نمرات و کارنامه</p>
             </button>
+
           </div>
         </div>
       </div>

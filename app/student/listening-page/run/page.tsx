@@ -6,7 +6,7 @@
 import { useParams, useSearchParams } from 'next/navigation';
 import { useState, useRef, useEffect, Suspense } from 'react';
 import AudioPlayer from '@/components/MusicPlayer'
-import { addStudentResponse, getListeningById, getQuestionsListeningByListeningId } from '@/app/actions';
+import { addStudentResponse, getListeningById, getQuestionsListeningByListeningId, ListeningDetail } from '@/app/actions';
 
 export interface AudioType {
     data: string;
@@ -31,22 +31,6 @@ interface IQuestion {
     wordsIndexPlayQuestion: null | string;
 }
 
-interface IListeningData {
-    _id: string;
-    classId?: string;
-    title: string;
-    level: string;
-    text?: string;
-    vipListening?: {
-        voiceName?: string;
-        text?: string;
-        transcription?: TranscriptionResponse;
-    };
-    vipListeningVoice?: AudioType;
-    question: IQuestion[];
-    createdAt: string;
-    updatedAt: string;
-}
 
 interface WordTimestamp {
     word: string;
@@ -98,7 +82,7 @@ function QuestionModal({
         }
         const sid = localStorage.getItem('student_id');
 
-        const result = await addStudentResponse({...userAnswerData}, sid, myId)
+        const result = await addStudentResponse({ ...userAnswerData }, sid, myId)
         // if (result.success) {
         //     alert('ذخیره شد')
         //     console.log(result.result)
@@ -206,7 +190,7 @@ function QuestionModal({
     );
 }
 
-// ─── خلاصه نتایج ─────────────────────────────────────────────────────────────
+
 function ResultSummary({ results, questions }: { results: QuestionResult[]; questions: IQuestion[] }) {
     const correct = results.filter((r) => r.isCorrect).length;
     const percent = results.length > 0 ? Math.round((correct / results.length) * 100) : 0;
@@ -238,7 +222,7 @@ function ResultSummary({ results, questions }: { results: QuestionResult[]; ques
     );
 }
 
-// ─── کامپوننت اصلی ───────────────────────────────────────────────────────────
+
 export function Listening() {
     const params = useParams();
     const { id } = params;
@@ -252,12 +236,12 @@ export function Listening() {
     const [isLoading, setIsLoading] = useState(false);
     const [translateWord, setTranslateWord] = useState<Translate>({ word: '', index: -2 });
     const [error, setError] = useState('');
-    const [listeningData, setListeningData] = useState<IListeningData | null>(null);
+    const [listeningData, setListeningData] = useState<ListeningDetail | null>(null);
     const [questions, setQuestions] = useState<IQuestion[]>([]);
 
     const [activeQuestion, setActiveQuestion] = useState<{ q: IQuestion; num: number; isPinned: boolean } | null>(null);
 
-    // ── refs برای دسترسی در closure بدون stale state ──
+
     const activeQuestionRef = useRef<{ q: IQuestion; num: number; isPinned: boolean } | null>(null);
     const questionsRef = useRef<IQuestion[]>([]);
     const askedQuestionsRef = useRef<Set<string>>(new Set());
@@ -271,7 +255,7 @@ export function Listening() {
 
     const audioRef = useRef<HTMLAudioElement>(null);
 
-    // sync refs با state
+
     useEffect(() => { activeQuestionRef.current = activeQuestion; }, [activeQuestion]);
     useEffect(() => { questionsRef.current = questions; }, [questions]);
     useEffect(() => { allResultsRef.current = allResults; }, [allResults]);
@@ -281,22 +265,15 @@ export function Listening() {
         if (!sid) window.location.href = '/';
     }, []);
 
-    // ─── بارگذاری صدا ────────────────────────────────────────────────────────
+
     useEffect(() => {
         async function load() {
             try {
                 const listening = await getListeningById(myId);
                 if (!listening) return;
                 setListeningData(listening);
-                const voiceData = listening.vipListeningVoice?.data;
-                const voiceType = listening.vipListeningVoice?.contentType;
-                if (voiceData) {
-                    const binary = window.atob(voiceData);
-                    const bytes = new Uint8Array(binary.length);
-                    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-                    const blob = new Blob([bytes], { type: voiceType });
-                    setAudioUrl(URL.createObjectURL(blob));
-                }
+                setAudioUrl(listening.audio_url);
+
             } catch {
                 setError('خطا در بارگذاری فایل صوتی');
             }
@@ -304,14 +281,14 @@ export function Listening() {
         load();
     }, [id]);
 
-    // ─── transcribe ──────────────────────────────────────────────────────────
+
     useEffect(() => {
         if (!audioUrl || isLoading) return;
         handleTranscribe();
     }, [audioUrl]);
 
     const handleTranscribe = async () => {
-        if (!listeningData?.vipListeningVoice?.data) { setError('فایل صوتی موجود نیست'); return; }
+        if (!listeningData?.audio_url) { setError('فایل صوتی موجود نیست'); return; }
         setIsLoading(true);
         try {
             const res = listeningData.vipListening?.transcription as TranscriptionResponse;
@@ -324,7 +301,7 @@ export function Listening() {
         }
     };
 
-    // ─── دریافت سوالات ──────────────────────────────────────────────────────
+
     useEffect(() => {
         const fetchQ = async () => {
             const sid = localStorage.getItem('student_id');
@@ -338,7 +315,7 @@ export function Listening() {
         fetchQ();
     }, []);
 
-    // ─── نمایش سوال پایانی ───────────────────────────────────────────────────
+
     const triggerEndQuestion = (idx: number) => {
         const qList = endQuestionsRef.current;
         if (idx >= qList.length) {
@@ -375,7 +352,7 @@ export function Listening() {
         }
     };
 
-    // ─── event listeners صوتی (فقط یکبار mount) ────────────────────────────
+
     useEffect(() => {
 
         const audio = audioRef.current;
@@ -391,10 +368,7 @@ export function Listening() {
             const qs = questionsRef.current;
             if (!qs.length) return;
 
-            // هایلایت کلمه جاری (words از closure گرفته میشه - باید از ref بگیریم)
-            // برای words از state استفاده می‌کنیم چون در useEffect دیگه‌ای handle میشه
 
-            // بررسی تریگر سوالات حین پخش
             const duringQs = qs.filter(
                 (q) => q.wordsIndexPlayQuestion !== null && q.wordsIndexPlayQuestion !== ''
             );
@@ -407,11 +381,7 @@ export function Listening() {
                 // console.log(triggerTime ,' triggerTime ')
                 const key = `during_${qi}`;
 
-                // triggerTime = ایندکس کلمه، باید time کلمه را بگیریم
-                // چون words در این closure نیست، از currentTime مستقیم استفاده نمیکنیم
-                // بجاش wordsIndexPlayQuestion رو به عنوان ایندکس کلمه نگه می‌داریم
-                // و از wordsRef استفاده می‌کنیم
-                // 
+
                 if (!isNaN(triggerTime) && !askedQuestionsRef.current.has(key)) {
                     console.log('شرط فعالسازی سوال')
                     const triggerWordTime = wordsRef.current[triggerTime]?.start;
@@ -447,9 +417,9 @@ export function Listening() {
             audio.removeEventListener('timeupdate', handleTimeUpdate);
             audio.removeEventListener('ended', handleEnded);
         };
-    }, [words]); // ← فقط یکبار، چون از refs استفاده می‌کنیم
+    }, [words]);
 
-    // ─── هایلایت کلمه (جداگانه چون به words نیاز داره) ─────────────────────
+
     const wordsRef = useRef<WordTimestamp[]>([]);
     useEffect(() => {
         wordsRef.current = words;
@@ -490,7 +460,7 @@ export function Listening() {
     return (
         <div className="min-h-screen w-full bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors duration-300">
 
-            {/* ── نوار شناور ── */}
+
             {audioUrl && (
                 <div className="fixed top-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700 shadow-lg">
                     <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3">
@@ -512,7 +482,7 @@ export function Listening() {
 
             {audioUrl && <div className="h-20" />}
 
-            {/* ── مودال سوال ── */}
+
             {activeQuestion && (
                 <QuestionModal
                     question={activeQuestion.q}

@@ -1,4 +1,3 @@
 {
-  "/page": "app/page.js",
-  "/student/select-letter/letter-view/page": "app/student/select-letter/letter-view/page.js"
+  "/teacher/admin-listening/page": "app/teacher/admin-listening/page.js"
 }

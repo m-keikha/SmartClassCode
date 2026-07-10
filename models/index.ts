@@ -5,7 +5,7 @@ const classSchema = new Schema({
   className: String,
   teacherName: String,
   schoolName: String,
-  password: { type: String, required: true }, 
+  password: { type: String, required: true },
   userName: { type: String, required: true, unique: true }, // اضافه شده برای لاگین
   role: { type: String, default: "teacher", required: true },
 });
@@ -32,13 +32,11 @@ const studentSchema = new Schema({
   ],
 });
 
-
 const courseSchema = new Schema({
   classId: { type: Schema.Types.ObjectId, ref: "Class", index: true },
 
   name: String,
 });
-
 
 const gradeSchema = new Schema({
   classId: {
@@ -54,7 +52,6 @@ const gradeSchema = new Schema({
   date: String,
 });
 
-
 const attendanceSchema = new Schema({
   classId: {
     type: Schema.Types.ObjectId,
@@ -62,7 +59,7 @@ const attendanceSchema = new Schema({
     index: true,
   },
   studentId: { type: Schema.Types.ObjectId, ref: "Student" },
-  date: String, 
+  date: String,
   status: { type: String, enum: ["absent", "present"], default: "absent" },
 });
 
@@ -121,7 +118,7 @@ const ListeningSchema = new Schema(
     level: {
       type: String,
       // required: [true, "سطح الزامی است"],
-      enum: ["اول", "دوم", "سوم", "چهارم", "پنجم", "ششم"], 
+      enum: ["اول", "دوم", "سوم", "چهارم", "پنجم", "ششم"],
     },
 
     text: {
@@ -131,15 +128,15 @@ const ListeningSchema = new Schema(
     vipListening: {
       voiceName: { type: String },
       text: { type: String },
-      transcription: { type: Schema.Types.Mixed }, 
+      transcription: { type: Schema.Types.Mixed },
     },
 
-    vipListeningVoice: {
-      type: Schema.Types.Mixed, 
-    },
+
+    audio_url: { type: String },
+    audioPublicId: { type: String },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   },
 );
 
@@ -160,46 +157,36 @@ if (models.Class) {
   delete models.Class;
 }
 
-
-
-
-
 const MediaVariantSchema = new Schema({
   text: { type: String, required: true },
-  imageUrl: { type: String, default: '' },
-  imagePublicId: { type: String, default: '' },
-  audioUrl: { type: String, default: '' },
-  audioPublicId: { type: String, default: '' },
+  imageUrl: { type: String, default: "" },
+  imagePublicId: { type: String, default: "" },
+  audioUrl: { type: String, default: "" },
+  audioPublicId: { type: String, default: "" },
 });
 
 const SentenceVariantSchema = new Schema({
   text: { type: String, required: true },
-  audioUrl: { type: String, default: '' },
-  audioPublicId: { type: String, default: '' },
+  audioUrl: { type: String, default: "" },
+  audioPublicId: { type: String, default: "" },
 });
 
 const AlphabetSchema = new Schema(
   {
-    letterGroup: { 
-      type: String, 
-      required: [true, 'نام گروه حرف الفبایی الزامی است'], 
-      unique: true, 
-      trim: true 
+    letterGroup: {
+      type: String,
+      required: [true, "نام گروه حرف الفبایی الزامی است"],
+      unique: true,
+      trim: true,
     },
     letterVariants: [MediaVariantSchema],
     examples: [MediaVariantSchema],
     sentences: [SentenceVariantSchema],
   },
-  { 
-    timestamps: true 
-  }
+  {
+    timestamps: true,
+  },
 );
-
-
-
-
-
-
 
 export const ListeningModel =
   models.Listening || model("Listening", ListeningSchema);
@@ -219,4 +206,4 @@ export const AttendanceModel =
 export const HomeworkModel =
   models.Homework || model("Homework", homeworkSchema);
 export const ReportModel = models.Report || model("Report", reportSchema);
-export const Alphabet = models.Alphabet || model('Alphabet', AlphabetSchema);
+export const Alphabet = models.Alphabet || model("Alphabet", AlphabetSchema);

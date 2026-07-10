@@ -696,7 +696,7 @@ export default function TeacherDashboard() {
                                         const todayAbsent = isAbsent(student._id, getTodayDate());
                                         return (
                                             <div key={student._id}
-                                                className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer relative group"
+                                                className="bg-white p-5 rounded-2xl shadow-sm border-4 border-gray-100 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer relative group"
                                                 onClick={() => setSelectedStudent(student)}>
 
                                                 <div className="flex items-center gap-4 mb-3">

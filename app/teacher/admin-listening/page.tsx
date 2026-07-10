@@ -2,15 +2,12 @@
 
 import React, { SetStateAction, useEffect, useState } from 'react'
 import { Textarea } from "@/components/ui/textarea"
-import { CircleAlert, LoaderCircle, Copy, Check } from 'lucide-react';
+import { CircleAlert, LoaderCircle, Copy, Check, CheckCircle2, Loader2 } from 'lucide-react';
 import { Select as SelectUi, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select"
-import { processAudioFile } from '../../../utils/processAudioFile'
 import { TranslationService } from '@/services/translation.service';
 import { Input } from '@/components/ui/input';
-import { addListening, checkAccessAdmin } from '../../actions'
-import { ListeningModel } from '@/models';
-import { useRouter } from 'next/router';
-import { AudioUtils, TTSService } from '@/components/TtsTranslate';
+import { addListening, checkAccessAdmin, uploadToCloudinary } from '../../actions'
+
 
 export interface Question {
     title: string;
@@ -21,7 +18,8 @@ export interface Question {
         text?: string;
         transcription?: TranscriptionResponse
     }
-    vipListeningVoice?: AudioType
+    audio_url?: string;
+    audioPublicId?: string
 }
 
 export interface AudioType {
@@ -31,11 +29,12 @@ export interface AudioType {
     size: number;
 }
 
-interface WordTimestamp {
+export interface WordTimestamp {
     word: string;
     start: number;
     end: number;
 }
+
 
 export interface TranscriptionResponse {
     success: boolean;
@@ -70,7 +69,10 @@ export default function VipListening() {
         level: 'اول',
     });
 
+
+
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingSaveAudio, setIsLoadingSaveAudio] = useState<boolean>(false);
     const [error, setError] = useState('');
     const [resultTranslate, setResultTranslate] = useState<TranslationResponse>()
     const [apiSelected, setApiSelected] = useState(2)
@@ -118,6 +120,7 @@ export default function VipListening() {
         }
     };
 
+
     const AudioUploader = () => {
         const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             const file = event.target.files?.[0];
@@ -160,44 +163,45 @@ export default function VipListening() {
     }
 
     const handleGetVoiceOpenAi = async (text: string, voiceName: string) => {
-        // if (!text.trim() || text === '') return setError('لطفاً متن را وارد کنید');
-        // if (!voiceName || voiceName === '') return setError('لطفاً صدا را انتخاب کنید');
+        return null
+        //     // if (!text.trim() || text === '') return setError('لطفاً متن را وارد کنید');
+        //     // if (!voiceName || voiceName === '') return setError('لطفاً صدا را انتخاب کنید');
 
-        setIsLoading(true);
-        setError('');
+        //     setIsLoading(true);
+        //     setError('');
 
-        try {
-            if (audioUrl) {
-                URL.revokeObjectURL(audioUrl);
-                setAudioUrl('');
-            }
+        //     try {
+        //         if (audioUrl) {
+        //             URL.revokeObjectURL(audioUrl);
+        //             setAudioUrl('');
+        //         }
 
-            let file: null | File = null
-            if (!audioFile) {
-                const ttsFullTextGenerate = await TTSService.generateVoice(text, voiceName, 'gemini', apiSelected)
-                file = AudioUtils.blobToFile(ttsFullTextGenerate, 'voice-audio.mp3', ttsFullTextGenerate.type);
-            } else file = audioFile
+        //         let file: null | File = null
+        //         if (!audioFile) {
+        //             const ttsFullTextGenerate = await TTSService.generateVoice(text, voiceName, 'gemini', apiSelected)
+        //             file = AudioUtils.blobToFile(ttsFullTextGenerate, 'voice-audio.mp3', ttsFullTextGenerate.type);
+        //         } else file = audioFile
 
-            const audioData = await processAudioFile(file)
-            if (audioData.data?.data && !audioData.error) {
-                setQuestion({ ...question, vipListeningVoice: audioData.data })
-                await handleTranscribe(audioData.data)
-            }
+        //         const audioData = await processAudioFile(file)
+        //         if (audioData.data?.data && !audioData.error) {
+        //             setQuestion({ ...question, vipListeningVoice: audioData.data })
+        //             await handleTranscribe(audioData.data)
+        //         }
 
-            const url = URL.createObjectURL(file);
-            setAudioUrl(url);
+        //         const url = URL.createObjectURL(file);
+        //         setAudioUrl(url);
 
-        } catch (err) {
-            if (err instanceof TypeError && err.message === 'Failed to fetch') {
-                setError('خطا در اتصال به سرور. لطفاً اتصال اینترنت خود را بررسی کنید');
-            } else if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError('خطای نامشخص رخ داد');
-            }
-        } finally {
-            setIsLoading(false);
-        }
+        //     } catch (err) {
+        //         if (err instanceof TypeError && err.message === 'Failed to fetch') {
+        //             setError('خطا در اتصال به سرور. لطفاً اتصال اینترنت خود را بررسی کنید');
+        //         } else if (err instanceof Error) {
+        //             setError(err.message);
+        //         } else {
+        //             setError('خطای نامشخص رخ داد');
+        //         }
+        //     } finally {
+        //         setIsLoading(false);
+        //     }
     }
 
     const handleTranscribe = async (listeningData: AudioType) => {
@@ -227,6 +231,7 @@ export default function VipListening() {
             const responseData: TranscriptionResponse = await response.json();
             if (!responseData.success) throw new Error(responseData.text || 'خطا در دریافت نتیجه');
 
+            // ذخیره مستقیم دیتای خام Whisper در State
             if (question.vipListening) {
                 setQuestion(prev => ({
                     ...prev,
@@ -256,9 +261,16 @@ export default function VipListening() {
                 setError('داده صوتی یافت نشد')
             } else file = audioFile
 
-            const audioData = await processAudioFile(file)
-            if (audioData.data?.data && !audioData.error) {
-                setQuestion({ ...question, vipListeningVoice: audioData.data })
+            setIsLoadingSaveAudio(true)
+
+
+
+
+            const { url: audioCloudinaryUrl, publicId, error } = await saveCloudinaryHandler(audioFile)
+
+
+            if (audioCloudinaryUrl && !error) {
+                setQuestion({ ...question, audio_url: audioCloudinaryUrl, audioPublicId: publicId })
 
                 const allWords: WordTimestamp[] = []
 
@@ -315,18 +327,39 @@ export default function VipListening() {
                 setError('خطای نامشخص رخ داد');
             }
         }
-        //         finally {
-        // return
-        //         }
+        finally {
+            setIsLoadingSaveAudio(false)
+        }
     }
 
+    const saveCloudinaryHandler = async (value: File) => {
 
+        if (value) {
+
+            const formData = new FormData();
+            formData.append("file", value);
+
+            const uploadResult = await uploadToCloudinary(formData);
+
+            if (!uploadResult.success) {
+                console.error("Upload failed!");
+                alert("خطا در آپلود فایل. لطفا دوباره تلاش کنید.");
+                return { error: uploadResult.error ?? 'خطا در آپلود فایل' }
+            }
+
+            return {
+                publicId: uploadResult.publicId as string,
+                url: uploadResult.url as string
+            }
+        }
+    }
 
 
     const postData = async () => {
         const result = await addListening(question)
         if (result.success) alert('با موفقیت ثبت شد')
     }
+
 
     const claudePrompt = `You are an expert Persian language editor. Your task is to receive a JSON object containing an array of transcribed "words" and fix any spelling errors.
 CRITICAL RULES:
@@ -360,6 +393,7 @@ Here is the JSON data:`;
             if (!Array.isArray(newWords) || newWords.length === 0) {
                 throw new Error('فرمت JSON نامعتبر است. لطفاً فقط آرایه خروجی را وارد کنید.');
             }
+
 
             setQuestion(prev => ({
                 ...prev,
@@ -457,7 +491,7 @@ Here is the JSON data:`;
 
                     <button
                         type="button"
-                        // onClick={() => !isLoading && handleGetVoiceOpenAi(question.vipListening?.text ?? '', question.vipListening?.voiceName ?? '')}
+
                         onClick={() => !isLoading && handleGetVoiceOpenAi(question.vipListening?.text ?? '', question.vipListening?.voiceName ?? '')}
                         disabled={isLoading}
                         className={`group flex items-center justify-center gap-3 mt-12 px-6 py-3 min-w-[260px] bg-amber-300 hover:bg-amber-400 text-amber-950 font-medium text-base rounded-xl shadow-md shadow-amber-300/20 hover:shadow-amber-300/40 transition-all duration-200 active:scale-95 disabled:opacity-80 disabled:cursor-wait disabled:active:scale-100`}
@@ -469,8 +503,8 @@ Here is the JSON data:`;
                             </>
                         ) : (
                             <>
-                                <span className="text-xl transition-transform duration-300 group-hover:translate-y-1">{audioUrl !== '' && question.vipListening?.transcription && question.vipListeningVoice ? '✅' : '⬇️'}</span>
-                                <span>{audioUrl !== '' && question.vipListening?.transcription && question.vipListeningVoice ? 'عملیات با موفقیت انجام شد' : 'تبدیل متن به صدا'} </span>
+                                <span className="text-xl transition-transform duration-300 group-hover:translate-y-1">{audioUrl !== '' && question.vipListening?.transcription && question.audio_url ? '✅' : '⬇️'}</span>
+                                <span>{audioUrl !== '' && question.vipListening?.transcription && question.audio_url ? 'عملیات با موفقیت انجام شد' : 'تبدیل متن به صدا'} </span>
                             </>
                         )}
                     </button>
@@ -478,12 +512,17 @@ Here is the JSON data:`;
 
                     <button
                         onClick={() => getManualData()}
+                        disabled={isLoadingSaveAudio}
                         className={`group flex items-center justify-center gap-3 mt-12 px-6 py-3 min-w-[260px] bg-amber-300 hover:bg-amber-400 text-amber-950 font-medium text-base rounded-xl shadow-md shadow-amber-300/20 hover:shadow-amber-300/40 transition-all duration-200 active:scale-95 disabled:opacity-80 disabled:cursor-wait disabled:active:scale-100`}
                     >
-                        دریافت صوت و داده های ترنسکریپت بصورت manual
+                        {isLoadingSaveAudio ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : question?.audio_url ? (
+                            <CheckCircle2 className="w-5 h-5" />
+                        ) : null}
 
+                        بارگذاری صوت و داده های ترنسکریپت بصورت manual
                     </button>
-
 
 
 
@@ -496,6 +535,7 @@ Here is the JSON data:`;
                             <p className="text-red-600 text-sm">{error}</p>
                         </div>
                     )}
+
 
                     {question.vipListening?.transcription?.words && (
                         <div className="mt-8 p-6 bg-indigo-50 border border-indigo-100 rounded-2xl shadow-sm">
@@ -544,7 +584,7 @@ Here is the JSON data:`;
                             </div>
                         </div>
                     )}
-                    {/* ------------------------------------------------------------- */}
+
 
                     <button
                         type="button"

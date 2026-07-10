@@ -1,6 +1,11 @@
 "use server";
 import { cookies } from "next/headers";
 import { ObjectId, Types } from "mongoose";
+import {
+  v2 as cloudinary,
+  UploadApiErrorResponse,
+  UploadApiResponse,
+} from "cloudinary";
 
 import connectDB from "@/lib/db";
 import {
@@ -30,17 +35,40 @@ interface VipListening {
   transcription?: any;
 }
 
-interface ListeningDetail {
+export interface ListeningDetail {
   _id: string;
   classId?: string;
   title: string;
   level: string;
   text?: string;
   vipListening?: VipListening;
-  vipListeningVoice?: any;
+  audio_url?: string;
+  audioPublicId?: string;
   createdAt: string;
   updatedAt: string;
 }
+
+export type CloudinaryUploadResponse = {
+  success: boolean;
+  url?: string;
+  publicId?: string;
+  error?: string;
+};
+
+export type CloudinaryMetadataResponse = {
+  success: boolean;
+  data?: any;
+  error?: string;
+};
+
+export type CloudinaryDeleteResponse = {
+  success: boolean;
+  result?: any;
+  error?: string;
+};
+
+
+
 
 export type Level = "اول" | "دوم" | "سوم" | "چهارم" | "پنجم" | "ششم";
 
@@ -66,7 +94,7 @@ export async function getTeacherData() {
     return { error: "عدم دسترسی: لطفاً ابتدا وارد شوید." };
   }
 
-  const classId = session.value; 
+  const classId = session.value;
 
   await connectDB();
   const students = await (StudentModel as any).find({ classId }).lean();
@@ -369,7 +397,10 @@ export async function addListening(data: any) {
   revalidatePath("/teacher");
   if (res) return { success: true };
   else return { success: false };
+
 }
+
+
 export async function listeningUpdateById(data: any, id: any) {
   // const cookieStore = await cookies();
   // const classId = cookieStore.get("teacher_session")?.value;
@@ -696,5 +727,65 @@ export async function getAlphabetById(id: string) {
       success: false,
       error: "خطای برقراری ارتباط با سرور.",
     };
+  }
+}
+
+
+
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+
+
+export async function uploadToCloudinary(
+  formData: FormData,
+): Promise<CloudinaryUploadResponse> {
+  try {
+    const file = formData.get("file") as File | null;
+    if (!file) return { success: false, error: "فایلی انتخاب نشده است" };
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: "smart_class_assets",
+          resource_type: "auto",
+        },
+        (
+          error: UploadApiErrorResponse | undefined,
+          result: UploadApiResponse | undefined,
+        ) => {
+          if (result) {
+            resolve({
+              success: true,
+              url: result.secure_url,
+              publicId: result.public_id,
+            });
+          } else {
+            reject({ success: false, error: error.message });
+          }
+        },
+      );
+      uploadStream.end(buffer);
+    });
+  } catch (error) {
+    return { success: false, error: "خطا در پردازش فایل آپلودی" };
+  }
+}
+
+export async function getCloudinaryFile(
+  publicId: string,
+): Promise<CloudinaryMetadataResponse> {
+  try {
+    const result = await cloudinary.api.resource(publicId);
+    return { success: true, data: result };
+  } catch (error) {
+    return { success: false, error: "فایل پیدا نشد یا خطایی رخ داد" };
   }
 }
