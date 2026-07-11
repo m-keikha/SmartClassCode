@@ -1,15 +1,30 @@
 {
   "pages": {
-    "/teacher/admin-listening/page": [
+    "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/teacher/admin-listening/page.js"
+      "static/chunks/app/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
+    ],
+    "/teacher/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/teacher/page.js"
+    ],
+    "/teacher/listening-page/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/teacher/listening-page/page.js"
+    ],
+    "/teacher/listening-page/run/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/teacher/listening-page/run/page.js"
     ]
   }
 }

@@ -67,9 +67,6 @@ export type CloudinaryDeleteResponse = {
   error?: string;
 };
 
-
-
-
 export type Level = "اول" | "دوم" | "سوم" | "چهارم" | "پنجم" | "ششم";
 
 export async function seedData() {
@@ -143,7 +140,8 @@ export async function getListeningById(
       level: listening.level,
       text: listening.text,
       vipListening: listening.vipListening,
-      vipListeningVoice: listening.vipListeningVoice,
+      audio_url: listening.audio_url,
+
       createdAt: listening.createdAt?.toISOString(),
       updatedAt: listening.updatedAt?.toISOString(),
     };
@@ -397,9 +395,7 @@ export async function addListening(data: any) {
   revalidatePath("/teacher");
   if (res) return { success: true };
   else return { success: false };
-
 }
-
 
 export async function listeningUpdateById(data: any, id: any) {
   // const cookieStore = await cookies();
@@ -730,16 +726,11 @@ export async function getAlphabetById(id: string) {
   }
 }
 
-
-
-
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
-
 
 export async function uploadToCloudinary(
   formData: FormData,
